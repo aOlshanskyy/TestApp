@@ -1,4 +1,8 @@
 var plus = false;
+var TIME = 500;
+var draw = 0;
+var tweenHealth;
+let healthBlock;
 
 window.onload = function () {
     const app = new PIXI.Application({
@@ -8,6 +12,9 @@ window.onload = function () {
     });
     document.body.appendChild(app.view);
 
+    app.ticker.add(function (delta) {
+        PIXI.tweenManager.update();
+    });
 
     // Создается персонаж dudu на которого при нажатии левой кнопкой мыши - полоска здоровья уменьшается,
     //  а при нажатии правой увеличивается
@@ -25,39 +32,50 @@ window.onload = function () {
 
     // Создается объект здоровье персонажа
     let textureHeart = PIXI.Texture.from('images/heart.png');
-    let healthBlock = new Health(textureHeart);
+    healthBlock = new Health(textureHeart);
     app.stage.addChild(healthBlock);
 
 
     // Создание прямоугольника отражающий полосу здоровья
+    const graphicsWhite = new PIXI.Graphics();
+    healthBlock.drawingWhite(graphicsWhite);
+    app.stage.addChild(graphicsWhite);
+
     const graphics = new PIXI.Graphics();
-    healthBlock.drawing(graphics);
-    app.stage.addChild(graphics);
+    healthBlock.drawingLine(graphics);
+    var t = app.renderer.generateTexture(graphics);
+    var obj = new PIXI.Sprite(t);
+    obj.x = app.screen.width - 250;
+    obj.y = 20;
+    app.stage.addChild(obj);
 
-    // анимирования, если переменная plus равна true тогда добавляем здоровья иначе отнимает
-    app.animationUpdate = function () {
-        if (plus) {
-            if (healthBlock.getVal < healthBlock.targetHealth) healthBlock.getVal += 0.5;
-            else app.ticker.remove(app.animationUpdate);
+    tweenHealth = PIXI.tweenManager.createTween(obj);
 
-        } else {
-            if (healthBlock.getVal > healthBlock.targetHealth) healthBlock.getVal -= 0.5;
-            else app.ticker.remove(app.animationUpdate);
-        }
-
-        healthBlock.drawing(graphics);
-    }
     // обработчик события мыши
     dudu
         .on('rightup', () => {
             plus = true;
             healthBlock.plusHealth();
-            app.ticker.add(app.animationUpdate);
+            animate(PIXI.tween.Easing.linear());
         })
         .on('click', () => {
             healthBlock.getVal == 12 ? dudu.texture = eggHead : dudu.texture = flowerTopTexture;
             plus = false;
             healthBlock.minusHealth();
-            app.ticker.add(app.animationUpdate);
+            animate(PIXI.tween.Easing.linear());
         });
+}
+
+function animate(easing) {
+    tweenHealth.stop().clear();
+    tweenHealth.time = TIME;
+    tweenHealth.easing = PIXI.tween.Easing.linear();
+    if (healthBlock.targetHealth < 181 && healthBlock.targetHealth > 12) {
+        tweenHealth.from({ x: window.innerWidth - 250, y: 20, width: healthBlock.getVal, height: 25 })
+            .to({ x: window.innerWidth - 250, y: 20, width: healthBlock.targetHealth, height: 25 });
+        tweenHealth.loop = false;
+        healthBlock.getVal = healthBlock.targetHealth;
+        tweenHealth.start();
+    }
+
 }
