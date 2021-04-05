@@ -12,7 +12,9 @@ window.onload = function () {
     // Создается персонаж dudu на которого при нажатии левой кнопкой мыши - полоска здоровья уменьшается,
     //  а при нажатии правой увеличивается
     let flowerTopTexture = PIXI.Texture.from('images/flowerTop.png');
-    let dudu = new PIXI.Sprite(flowerTopTexture);
+    let eggHead = PIXI.Texture.from('images/eggHead.png');
+    let texture = flowerTopTexture;
+    let dudu = new PIXI.Sprite(texture);
     dudu.anchor.set(0.5);
     dudu.x = app.screen.width / 2;
     dudu.y = app.screen.height / 2;
@@ -20,7 +22,7 @@ window.onload = function () {
     dudu.buttonMode = true;
     app.stage.addChild(dudu);
 
-   
+
     // Создается объект здоровье персонажа
     let textureHeart = PIXI.Texture.from('images/heart.png');
     let healthBlock = new Health(textureHeart);
@@ -34,24 +36,28 @@ window.onload = function () {
 
     // анимирования, если переменная plus равна true тогда добавляем здоровья иначе отнимает
     app.animationUpdate = function () {
-        plus ? healthBlock.plusHealth() : healthBlock.minusHealth();
+        if (plus) {
+            if (healthBlock.getVal < healthBlock.targetHealth) healthBlock.getVal += 0.5;
+            else app.ticker.remove(app.animationUpdate);
+
+        } else {
+            if (healthBlock.getVal > healthBlock.targetHealth) healthBlock.getVal -= 0.5;
+            else app.ticker.remove(app.animationUpdate);
+        }
+
         healthBlock.drawing(graphics);
     }
     // обработчик события мыши
     dudu
         .on('rightup', () => {
             plus = true;
+            healthBlock.plusHealth();
             app.ticker.add(app.animationUpdate);
-            setTimeout(function () {
-                app.ticker.remove(app.animationUpdate);
-            }, 500);
         })
-        .on('click', ()=>{
+        .on('click', () => {
+            healthBlock.getVal == 12 ? dudu.texture = eggHead : dudu.texture = flowerTopTexture;
             plus = false;
+            healthBlock.minusHealth();
             app.ticker.add(app.animationUpdate);
-            setTimeout(function () {
-                app.ticker.remove(app.animationUpdate);
-            }, 500);
         });
 }
-

@@ -1,21 +1,23 @@
 class Health extends PIXI.Sprite {
     constructor(texture) {
         super(texture);
-        this.getVal = 130;
+        this.targetHealth = 180;
+        this.getVal = 180;
         this.x = window.innerWidth - 290;
         this.y = 20;
         this.scale.set(0.025);
     }
-    
+
     plusHealth = () => {
-        if (this.getVal < 180) {
-            this.getVal += 1;
+        if (this.targetHealth < 180) {
+            this.targetHealth += 12;
         }
     };
     minusHealth = () => {
-        if (this.getVal != 0) {
-            this.getVal -= 1;
+        if (this.targetHealth != 12 ) {
+            this.targetHealth -= 12;
         }
+
     }
     drawing(graphics) {
         graphics.lineStyle(2, 0xFfffff, 1);
