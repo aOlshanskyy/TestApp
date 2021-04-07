@@ -9,16 +9,28 @@ class MainWindow extends PIXI.Container {
             685, 445,
             900, 170
         ];
+        this.duduDeath = [];
+
+        this.bubu = this.addChild(new Bubu());
+        this.bubu.position.set(500, 500);
+
+        this.createDudus();
+
+        this.eventEmitter = new PIXI.utils.EventEmitter();
+        this.eventEmitter.on('death', this.finish);
     }
+
+    finish = () =>{
+        if(this.duduDeath.length === 3) console.log("You Win !!!");
+    }
+
     createDudus() {
         for (let i = 0; i < this.lenght; i++) {
-            let dudu = new Dudu(this.stage, PIXI.Texture.from('images/flowerTop.png'), this.duduPositions[i * 2], this.duduPositions[i * 2 + 1]);
-            dudu.hero
-                .on('rightup', () => dudu.onRightUp(i))
-                .on('click', () => dudu.onClick(i));
-            dudu.createDudu();
+            var dudu = new Dudu(this.eventEmitter);
+            dudu.indexOfArray = i;
             this.dudus.push(dudu);
-
+            dudu.position.set(this.duduPositions[i * 2], this.duduPositions[i * 2 + 1]);
+            this.addChild(dudu);
         }
     }
 }

@@ -1,51 +1,42 @@
-class Dudu {
-    constructor(stage, texture, posX, posY) {
-        this.stage = stage;
-        this.texture = texture;
-        this.hero = new PIXI.Sprite(this.texture);
-        this.hero.x = posX;
-        this.hero.y = posY;
-        this.healthBlock = new Health(PIXI.Texture.from('images/heart.png'), this.hero.x - 130, this.hero.y - 150);
-        this.tweenManager = null;
+class Dudu extends PIXI.Sprite {
+    constructor(eventEmitter) {
+        super();
+        this.body = this.addChild(new PIXI.Sprite.from('images/flowerTop.png'));
+        this.eventEmitter = eventEmitter;
+        this.alive = true;
+        this.indexOfArray = null;
+        this.body.interactive = true;
+        this.body.buttonMode = true;
+        this.healthBlock = this.addChild(new Health(PIXI.Texture.from('images/heart.png'), this.body.x - 130, this.body.y - 130));
+        this.body.anchor.set(0.5);
+        this.body.on("click", this.onClick);
+        this.body.on("rightup", this.onRightUp);
     }
 
-    createDudu() {
-        this.hero.anchor.set(0.5);
-        this.hero.interactive = true;
-        this.hero.buttonMode = true;
-        this.stage.addChild(this.hero);
-        this.stage.addChild(this.healthBlock);
-
-        const graphicsWhite = new PIXI.Graphics();
-        const graphics = new PIXI.Graphics();
-        this.healthBlock.drawingLine(graphicsWhite, graphics);
-        this.stage.addChild(graphicsWhite);
-        var t = app.renderer.generateTexture(graphics);
-        this.tweenManager = new PIXI.Sprite(t);
-        this.tweenManager.x = this.hero.x - 90;
-        this.tweenManager.y = this.hero.y - 150;
-        this.stage.addChild(this.tweenManager);
-        
-    }
-
-    died(newTexture) {
-        this.hero.texture = newTexture;
-    }
-
-    comeToLive(newTexture) {
-        this.hero.texture = newTexture;
-    }
-
-    onRightUp(i) {
-        let flowerTopTexture = PIXI.Texture.from('images/flowerTop.png');
-        if(this.healthBlock.getVal > 12) this.comeToLive(flowerTopTexture);
-        this.healthBlock.plusHealth();
-        animate(i, PIXI.tween.Easing.linear());
-    }
-    onClick(i) {
+    death = () => {
+        // обозначает дуду не живой
+        this.alive = false;
         let eggHead = PIXI.Texture.from('images/eggHead.png');
-        if(this.healthBlock.getVal === 12) this.died(eggHead);
-        this.healthBlock.minusHealth();
-        animate(i, PIXI.tween.Easing.linear());
+        this.body.texture = eggHead;
+
+        // Для того чтобы програма работала, я создал массив duduDeath в котором сохраняются 
+        // дуды которые уже не живые, и если длина этого массива 
+        // равна длине массива всех дуд ) вывожу You Win !!!
+        this.parent.duduDeath.push(this.parent.dudus[this.indexOfArray]);
+        this.parent.emit('death', this.parent.finish());
+    }
+
+    onClick = () => {
+        if (this.alive) {
+            if (this.healthBlock.getVal === 12) this.death();
+            this.healthBlock.minusHealth();
+            animate(this.indexOfArray, PIXI.tween.Easing.linear());
+        }
+    }
+    onRightUp = () => {
+        if (this.alive) {
+            this.healthBlock.plusHealth();
+            animate(this.indexOfArray, PIXI.tween.Easing.linear());
+        }
     }
 }
