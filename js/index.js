@@ -15,11 +15,11 @@ window.onload = function () {
         PIXI.tweenManager.update();
     });
     mainWindow = new MainWindow(app.stage);
-    for(let i = 0; i < mainWindow.lenght; i++){
+    for (let i = 0; i < mainWindow.lenght; i++) {
         tweenHealth[i] = PIXI.tweenManager.createTween(mainWindow.dudus[i].healthBlock.tweenManager);
     }
     app.stage.addChild(mainWindow);
-    
+
 }
 
 function animate(i, easing) {

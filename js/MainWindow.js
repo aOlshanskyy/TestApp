@@ -15,13 +15,24 @@ class MainWindow extends PIXI.Container {
         this.bubu.position.set(500, 500);
 
         this.createDudus();
-
-        this.eventEmitter = new PIXI.utils.EventEmitter();
-        this.eventEmitter.on('death', this.finish);
+        this.messageScreen = new FinalyText('You won!\n enter your name\n');
     }
 
-    finish = () =>{
-        if(this.duduDeath.length === 3) console.log("You Win !!!");
+    handleDeath = () => {
+        console.log("Plus deid one");
+        if (this.duduDeath.length === 3) {
+            this.stage.addChild(this.messageScreen.text);
+            console.log('You won !!!');
+            document.addEventListener('keydown', this.handleWinName, false);
+        }
+    }
+
+    handleWinName = (event) => {
+        if (event.keyCode >= 64 && event.keyCode <= 90 || event.keyCode >= 219 && event.keyCode <= 221 || event.keyCode === 188 || event.keyCode === 190 || event.keyCode === 32) {
+            this.stage.removeChild(this.messageScreen.text);
+            this.messageScreen.update(event.key);
+            this.stage.addChild(this.messageScreen.text);
+        }
     }
 
     createDudus() {
@@ -30,6 +41,7 @@ class MainWindow extends PIXI.Container {
             dudu.indexOfArray = i;
             this.dudus.push(dudu);
             dudu.position.set(this.duduPositions[i * 2], this.duduPositions[i * 2 + 1]);
+            dudu.on("death", this.handleDeath, this)
             this.addChild(dudu);
         }
     }

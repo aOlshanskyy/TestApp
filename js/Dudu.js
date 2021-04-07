@@ -18,12 +18,10 @@ class Dudu extends PIXI.Sprite {
         this.alive = false;
         let eggHead = PIXI.Texture.from('images/eggHead.png');
         this.body.texture = eggHead;
-
-        // Для того чтобы програма работала, я создал массив duduDeath в котором сохраняются 
-        // дуды которые уже не живые, и если длина этого массива 
-        // равна длине массива всех дуд ) вывожу You Win !!!
         this.parent.duduDeath.push(this.parent.dudus[this.indexOfArray]);
-        this.parent.emit('death', this.parent.finish());
+        // this.parent.emit('death', this.parent.finish());
+        this.emit("death")
+        // this.parent.emit('death', this.body);
     }
 
     onClick = () => {
