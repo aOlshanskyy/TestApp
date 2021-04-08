@@ -21,6 +21,6 @@ class FinalyText{
     draw(){
         this.text = new PIXI.Text(this.leter, this.style);
         this.text.anchor.set(0.5);
-        this.text.position.set(app.screen.width / 2, app.screen.height / 2);
+        this.text.position.set(app.screen.width / 2, app.screen.height / 2 - 50);
     }
 }

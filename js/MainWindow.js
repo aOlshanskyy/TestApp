@@ -21,6 +21,17 @@ class MainWindow extends PIXI.Container {
     handleDeath = () => {
         console.log("Plus deid one");
         if (this.duduDeath.length === 3) {
+            
+            let fireworksleft = new PIXI.Container();
+            let fireworkl = new Fireworks(fireworksleft, window.innerWidth / 4, window.innerHeight / 2);
+            fireworkl.draw();
+            app.stage.addChild(fireworksleft);
+
+            let fireworksRight = new PIXI.Container();
+            let fireworkr = new Fireworks(fireworksRight, window.innerWidth - window.innerWidth / 4, window.innerHeight / 2);
+            fireworkr.draw();
+            app.stage.addChild(fireworksRight);
+
             this.stage.addChild(this.messageScreen.text);
             console.log('You won !!!');
             document.addEventListener('keydown', this.handleWinName, false);
