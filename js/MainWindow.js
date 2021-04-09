@@ -21,7 +21,14 @@ class MainWindow extends PIXI.Container {
     handleDeath = () => {
         console.log("Plus deid one");
         if (this.duduDeath.length === 3) {
-            
+            const sound = new Howl({
+                src: ['sounds/win-sound.mp3'],
+                autoplay: true,
+                loop: true,
+                volume: 0.5
+            });
+            sound.play();
+
             let fireworksleft = new PIXI.Container();
             let fireworkl = new Fireworks(fireworksleft, window.innerWidth / 4, window.innerHeight / 2);
             fireworkl.draw();
